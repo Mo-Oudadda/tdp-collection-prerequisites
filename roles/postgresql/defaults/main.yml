@@ -90,6 +90,10 @@ postgresql_hue_user: hue
 postgresql_hue_password: hue
 postgresql_hue_database: hue
 
+postgresql_airflow_user: airflow
+postgresql_airflow_password: airflow
+postgresql_airflow_database: airflow
+
 postgresql_generated_users: >-
   [
     {%- if groups['ranger_admin'] is defined and groups['ranger_admin'] | length > 0 -%}
@@ -106,6 +110,9 @@ postgresql_generated_users: >-
     {%- endif -%}
     {%- if groups['hue_server'] is defined and groups['hue_server'] | length > 0 -%}
       { "name": "{{ postgresql_hue_user }}", "password": "{{ postgresql_hue_password }}" },
+    {%- endif -%}
+    {%- if groups['airflow_webserver'] is defined and groups['airflow_webserver'] | length > 0 -%}
+      { "name": "{{ postgresql_airflow_user }}", "password": "{{ postgresql_airflow_password }}" },
     {%- endif -%}
   ]
 
@@ -134,6 +141,9 @@ postgresql_generated_databases: >-
     {%- endif -%}
     {%- if groups['hue_server'] is defined and groups['hue_server'] | length > 0 -%}
       { "name": "{{ postgresql_hue_database }}", "owner": "{{ postgresql_hue_user }}", "hba_addresses": [ {% for host in groups['hue_server'] %}{% if hostvars[host][postgresql_generated_hba_address_hostvars_key] is defined %}"{{ hostvars[host][postgresql_generated_hba_address_hostvars_key] }}/32",{% else %}"",{% endif %}{% endfor %} ] },
+    {%- endif -%}
+    {%- if groups['airflow_webserver'] is defined and groups['airflow_webserver'] | length > 0 -%}
+      { "name": "{{ postgresql_airflow_database }}", "owner": "{{ postgresql_airflow_user }}", "hba_addresses": [ {% for host in groups['airflow_webserver'] %}{% if hostvars[host][postgresql_generated_hba_address_hostvars_key] is defined %}"{{ hostvars[host][postgresql_generated_hba_address_hostvars_key] }}/32",{% else %}"",{% endif %}{% endfor %} ] },
     {%- endif -%}
   ]
 
